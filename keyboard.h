@@ -9,8 +9,8 @@
  saidas
    nenhuma
 *************************/
-extern void keyboard_debug(char* texto, int ln = 0);
-extern void keyboard_debug(int value, int ln = 0);
+extern void keyboard_debug(char* texto, int ln = 1);
+extern void keyboard_debug(int value, int ln = 1);
 
 /************************
  keyboard_getKeys

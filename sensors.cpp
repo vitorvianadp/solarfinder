@@ -3,6 +3,7 @@
 #include "config.h"
 #include "display.h"
 
+
 /************************
  sensors_getLuminosity
  Computa os valores de luminosidade detectada nos 4 LDRs
@@ -12,13 +13,20 @@
    struct com as 4 leituras analogicas atuais dos sensores
 *************************/
 sensorsReading sensors_getLuminosity(){
-    sensorsReading sensorsReading;
+    sensorsReading luminosities;
+
     #ifdef DEBUG
-        sensorsReading.luminosityValues[0] = 450;
-        sensorsReading.luminosityValues[1] = 550;
-        sensorsReading.luminosityValues[2] = 650;
-        sensorsReading.luminosityValues[3] = 750;
+        luminosities.values[0] = 450;
+        luminosities.values[1] = 550;
+        luminosities.values[2] = 650;
+        luminosities.values[3] = 750;
     #endif
-    // adicionar leitura dos sensores de fato (comunicacao do esp)
-    return sensorsReading;
+
+    //leitura dos sensores LDR
+    // luminosities.values[0] = analogRead(LDRLT_PIN); // superior esquerdo
+    // luminosities.values[1] = analogRead(LDRRT_PIN); // superior direito
+    // luminosities.values[2] = analogRead(LDRLD_PIN); // inferior esquerdo
+    // luminosities.values[3] = analogRead(LDRRD_PIN); // inferior direito
+
+    return luminosities;
 }

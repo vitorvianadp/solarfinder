@@ -5,13 +5,13 @@
 
 /************************
  keyboard_debug
- Funcao usada so para debugar, remover dps
+ Funcao usada durante o desenvolvimento do codigo para testes com serial
  entradas
    texto : texto a ser enviado no serial
  saidas
    nenhuma
 *************************/
-void keyboard_debug(char *texto, int ln = 0)
+void keyboard_debug(char *texto, int ln = 1)
 {
     #ifdef DEBUG
         if (ln == 0)
@@ -21,7 +21,7 @@ void keyboard_debug(char *texto, int ln = 0)
     #endif
 }
 
-void keyboard_debug(int value, int ln = 0)
+void keyboard_debug(int value, int ln = 1)
 {
     #ifdef DEBUG
         if (ln == 0)
@@ -47,10 +47,11 @@ char *keyboard_getKeys()
     // para o codigo correspondente na logica de movimentacao (meio que a logica de tratamento fica aqui e de movimentacao nao fica aqui)
 
     /*
-    evento:                        codigo
+    evento:                        codigo   variacoes
     inicializar e escolher manual: 'm'
     inicializar e escolher auto:   'a'
-    apertar setas para movimentar: 'k'
+    apertar setas para movimentar: 'i'      'iu' -> up;   'il' -> left;
+                                            'id' -> down; 'ir' -> right
     mudar modo com o switch:       's'
     salvar posicao atual:          'p'
     */

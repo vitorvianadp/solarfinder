@@ -18,7 +18,7 @@ void display_getInfo(sensorsReading sensorsReading){
             Serial.print("Sensor ");
             Serial.print(i);
             Serial.print(": ");
-            Serial.println(sensorsReading.luminosityValues[i]);
+            Serial.println(sensorsReading.values[i]);
         }
     #endif
     // implementar POST request para interface com os dados do sensor

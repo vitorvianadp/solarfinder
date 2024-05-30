@@ -5,14 +5,18 @@
 */
 
 #include "config.h"
+#include "controller.h"
 #include "display.h"
 #include "keyboard.h"
+#include "positioner.h"
 #include "sensors.h"
 
 int eventCode;
 int actionCode;
 int state;
 int internEvent;
+int operationMode = NO_MODE;
+char lastMovementKey;
 stateTransitionMatrix stateTransition;
 
 /************************************************************************
@@ -36,30 +40,37 @@ int executeAction(int actionCode)
     switch(actionCode)
     {
     case A01:
-        keyboard_debug("Modo manual selecionado.", 1);
+        keyboard_debug("Modo manual selecionado.");
+        operationMode = MANUAL;
         break;
     case A02:
-        keyboard_debug("Modo automatico selecionado.", 1);
+        keyboard_debug("Modo automatico selecionado.");
+        operationMode = AUTOMATIC;
         break;
     case A03:
-        keyboard_debug("Entrada de teclas para posicionar a placa.", 1);
+        keyboard_debug("Entrada de teclas para posicionar a placa.");
         retval = MOVE_MOTORS;
         break;
     case A04:
         // a principio uma acao so, a funcao seria chamada aqui e deveria tratar la dentro como a movimentacao deve ser feita
-        keyboard_debug("Movimentacao dos motores.", 1);
+        keyboard_debug("Movimentacao dos motores.");
+        positioner_moveMotors(controller_adjustPositions(operationMode, sensors_getLuminosity(), lastMovementKey));
         break;
     case A05:
-        keyboard_debug("Leitura de luminosidade dos sensores.", 1);
+        keyboard_debug("Leitura de luminosidade dos sensores.");
         display_getInfo(sensors_getLuminosity());
         retval = MOVE_MOTORS;
         break;
     case A06:
         // funcao deve ser chamada aqui e tratar qual deve ser o novo modo de operacao
-        keyboard_debug("Modo de operacao alterado.", 1);
+        keyboard_debug("Modo de operacao alterado.");
+        operationMode = 1 - operationMode; // switch
         break;
     case A07:
-        keyboard_debug("Placa agora esta travada na posicao definida.", 1);
+        keyboard_debug("Placa agora esta travada na posicao definida.");
+        operationMode = NO_MODE;
+        break;
+    default:
         break;
     } // switch
 
@@ -112,6 +123,7 @@ void initStateMachine()
 
 } // initStateMachine
 
+
 /************************************************************************
  initSystem
  Inicia o sistema ...
@@ -123,6 +135,7 @@ void initStateMachine()
 void initSystem()
 {
    initStateMachine();
+   positioner_init();
    state = IDLE_CLIENT;
    internEvent = NO_EVENTS;
 } // initSystem
@@ -140,14 +153,16 @@ TODO: implementar as condicoes para IHM real, adicionando header e source para o
 int obtainEvent()
 {
     int event = NO_EVENTS;
+    char* keys;
     char code;
-    code = keyboard_getKeys()[0];
+    keys = keyboard_getKeys();
+    code = keys[0];
 
     /*
     evento:                        codigo   implementacao (onde recebe o codigo ou como ativar)
     inicializar e escolher manual: 'm'      keyboard
     inicializar e escolher auto:   'a'      keyboard
-    apertar setas para movimentar: 'k'      keyboard
+    apertar setas para movimentar: 'i'      keyboard
     movimentar os motores:         'r'      evento interno apos executar A03 ou A05
     leitura dos sensores LDR:      'l'      task continua se estiver no modo automatico
     mudar modo com o switch:       's'      keyboard
@@ -162,8 +177,9 @@ int obtainEvent()
     case 'a':
         event = SELECT_AUTOMATIC;
         break;
-    case 'k': // pensar ainda em como fazer a logica de movimentacao para cada lado, talvez usar keys[1]
+    case 'i': // pensar ainda em como fazer a logica de movimentacao para cada lado, talvez usar keys[1]
         event = INPUT_KEYS;
+        lastMovementKey = keys[1];
         break;
     case 'r': // dentro da propia funcao para movimentacao que deve ser checado o modo de operacao
         event = MOVE_MOTORS;
@@ -232,11 +248,11 @@ void loop() {
         state = obtainNextState(state, eventCode);
         internEvent = executeAction(actionCode);
 
-        keyboard_debug("Estado: ");
-        keyboard_debug(state);
-        keyboard_debug(" Evento: ");
-        keyboard_debug(eventCode);
-        keyboard_debug(" Acao: ");
-        keyboard_debug(actionCode, 1);
+        keyboard_debug("Estado: ", 0);
+        keyboard_debug(state, 0);
+        keyboard_debug(" Evento: ", 0);
+        keyboard_debug(eventCode, 0);
+        keyboard_debug(" Acao: ", 0);
+        keyboard_debug(actionCode);
   }
 } // loop
