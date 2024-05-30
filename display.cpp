@@ -3,8 +3,6 @@
 #include "config.h"
 #include "display.h"
 
-#define DEBUG
-
 /************************
  display_getInfo
  Obtem dados dos sensores para exibir na interface
@@ -13,14 +11,14 @@
  saidas
    nenhuma
 *************************/
-void display_getInfo(int values[]){
+void display_getInfo(sensorsReading sensorsReading){
     #ifdef DEBUG
         Serial.println("Leituras:");
         for (int i = 0; i < 4; i++){
             Serial.print("Sensor ");
             Serial.print(i);
             Serial.print(": ");
-            Serial.println(values[i]);
+            Serial.println(sensorsReading.luminosityValues[i]);
         }
     #endif
     // implementar POST request para interface com os dados do sensor

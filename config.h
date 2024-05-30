@@ -1,11 +1,14 @@
 #ifndef CONFIG_H_INCLUDED
 #define CONFIG_H_INCLUDED
 
+#define DEBUG
+
 #define true  1
 #define false 0
 
 #define NUM_STATES 5
 #define NUM_EVENTS 7
+#define NUM_SENSORS 4
 
 #define NO_EVENTS -1 // Nenhum evento
 #define NO_ACTIONS -1 // Nenhuma acao
@@ -24,5 +27,10 @@ typedef struct stateTransitionMatrix {
     int action[NUM_STATES][NUM_EVENTS];
     int next_state[NUM_STATES][NUM_EVENTS];
 } stateTransitionMatrix;
+
+// VETOR DE LEITURAS DOS SENSORES
+typedef struct sensorsReading {
+    int luminosityValues[NUM_SENSORS];
+} sensorsReading;
 
 #endif // CONFIG_H_INCLUDED

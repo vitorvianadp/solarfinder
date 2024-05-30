@@ -5,8 +5,9 @@
 */
 
 #include "config.h"
-#include "keyboard.h"
 #include "display.h"
+#include "keyboard.h"
+#include "sensors.h"
 
 int eventCode;
 int actionCode;
@@ -27,7 +28,6 @@ TODO: implementar as funcoes, por enquanto ta com os prints para testes
 int executeAction(int actionCode)
 {
     int retval;
-    int fakeSensorRead[4] = {450, 500, 600, 750};
 
     retval = NO_EVENTS;
     if (actionCode == NO_ACTIONS)
@@ -51,7 +51,7 @@ int executeAction(int actionCode)
         break;
     case A05:
         keyboard_debug("Leitura de luminosidade dos sensores.", 1);
-        display_getInfo(fakeSensorRead);
+        display_getInfo(sensors_getLuminosity());
         retval = MOVE_MOTORS;
         break;
     case A06:

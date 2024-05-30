@@ -3,8 +3,6 @@
 #include "config.h"
 #include "keyboard.h"
 
-#define DEBUG
-
 /************************
  keyboard_debug
  Funcao usada so para debugar, remover dps
