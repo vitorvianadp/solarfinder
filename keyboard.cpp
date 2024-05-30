@@ -3,15 +3,24 @@
 #include "config.h"
 #include "keyboard.h"
 
+KeyboardClass Keyboard;
+
+/************************************************************************
+ construtor
+*************************************************************************/
+KeyboardClass::KeyboardClass()
+{
+}
+
 /************************
- keyboard_debug
+ debug
  Funcao usada durante o desenvolvimento do codigo para testes com serial
  entradas
    texto : texto a ser enviado no serial
  saidas
    nenhuma
 *************************/
-void keyboard_debug(char *texto, int ln = 1)
+void KeyboardClass::debug(char *texto, int ln = 1)
 {
     #ifdef DEBUG
         if (ln == 0)
@@ -21,7 +30,8 @@ void keyboard_debug(char *texto, int ln = 1)
     #endif
 }
 
-void keyboard_debug(int value, int ln = 1)
+//override
+void KeyboardClass::debug(int value, int ln = 1)
 {
     #ifdef DEBUG
         if (ln == 0)
@@ -32,7 +42,7 @@ void keyboard_debug(int value, int ln = 1)
 }
 
 /************************
- keyboard_getKeys
+ getKeys
  Obtem tecla de movimentacao no caso manual
  Obtem status do switch para determinar o modo
  entradas
@@ -40,8 +50,7 @@ void keyboard_debug(int value, int ln = 1)
  saidas
    informacao recebida na interface ou NO_INFO
 *************************/
-char buf[10];
-char *keyboard_getKeys()
+char* KeyboardClass::getKeys()
 {
     // nessa funcao pode ser feita talvez uma conversao do evento de apertar o switch ou apertar tecla de movimentacao
     // para o codigo correspondente na logica de movimentacao (meio que a logica de tratamento fica aqui e de movimentacao nao fica aqui)

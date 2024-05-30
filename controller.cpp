@@ -1,18 +1,24 @@
 #include "controller.h"
 #include "config.h"
 
-// Variaveis globais
-int servoHorizontal = SERVO_HOR_INITIAL;
-int servoVertical = SERVO_VERT_INITIAL;
-servosPositions positions;
+ControllerClass Controller;
 
 /************************************************************************
- controller_limitPositions
+ construtor
+*************************************************************************/
+ControllerClass::ControllerClass()
+{
+    servoHorizontal = SERVO_HOR_INITIAL;
+    servoVertical = SERVO_VERT_INITIAL;
+}
+
+/************************************************************************
+ limitPositions
  Logica para limitar a posicao dos servos
  Parametros de entrada: nenhum
  Retorno: nenhum
 *************************************************************************/
-void controller_limitPositions(){
+void ControllerClass::limitPositions(){
     if (servoVertical > SERVO_VERT_MAX) //se atingir o limite do servo, servo não se move
         servoVertical = SERVO_VERT_MAX;
     else if (servoVertical < SERVO_VERT_MIN) //se atingir o limite do servo, servo não se move
@@ -29,7 +35,7 @@ void controller_limitPositions(){
  Parametros de entrada: leitura dos sensores
  Retorno: posicao dos servomotores
 *************************************************************************/
-void controller_automatic(sensorsReading luminosities){
+void ControllerClass::automatic(sensorsReading luminosities){
 
     int lt = luminosities.values[0]; // superior esquerdo
     int rt = luminosities.values[1]; // superior direito
@@ -73,27 +79,27 @@ void controller_automatic(sensorsReading luminosities){
             delay(5000);
     }
 
-    #ifdef DEBUG
-        Serial.print("avt = ");
-        Serial.println(avt);
-        Serial.print("avd = ");
-        Serial.println(avd);
-        Serial.print("avl = ");
-        Serial.println(avl);
-        Serial.print("avr = ");
-        Serial.println(avr);
-        Serial.print("dvert = ");
-        Serial.println(dvert);
-        Serial.print("dhoriz = ");
-        Serial.println(dhoriz);
+    // #ifdef DEBUG
+    //     Serial.print("avt = ");
+    //     Serial.println(avt);
+    //     Serial.print("avd = ");
+    //     Serial.println(avd);
+    //     Serial.print("avl = ");
+    //     Serial.println(avl);
+    //     Serial.print("avr = ");
+    //     Serial.println(avr);
+    //     Serial.print("dvert = ");
+    //     Serial.println(dvert);
+    //     Serial.print("dhoriz = ");
+    //     Serial.println(dhoriz);
 
-        Serial.print("delay dtime =");
-        Serial.println(dtime);
+    //     Serial.print("delay dtime =");
+    //     Serial.println(dtime);
 
-        Serial.print("tolerancia = ");
-        Serial.println(tol);
-        // Serial.print e Serial.println adicionam um delay grande (servo vai se mover mais devagar)
-    #endif
+    //     Serial.print("tolerancia = ");
+    //     Serial.println(tol);
+    //     // Serial.print e Serial.println adicionam um delay grande (servo vai se mover mais devagar)
+    // #endif
 
     delay(dtime);
 }
@@ -104,7 +110,7 @@ void controller_automatic(sensorsReading luminosities){
  Parametros de entrada: leitura do teclado
  Retorno: posicao dos servomotores
 *************************************************************************/
-void controller_manual(char key){
+void ControllerClass::manual(char key){
     if (key == 'u')
         servoVertical++;
     else if (key == 'd')
@@ -121,16 +127,16 @@ void controller_manual(char key){
  Parametros de entrada: modo de operacao, leitura atual dos sensores e ultima tecla de movimentacao pressionada
  Retorno: posicao dos servomotores
 *************************************************************************/
-servosPositions controller_adjustPositions(int operationMode, sensorsReading luminosities, char lastMovementKey){
+servosPositions ControllerClass::adjustPositions(int operationMode, sensorsReading luminosities, char lastMovementKey){
 
     if (operationMode == MANUAL){
-        controller_manual(lastMovementKey);
+        manual(lastMovementKey);
     }
     else if (operationMode == AUTOMATIC){
-        controller_automatic(luminosities);
+        automatic(luminosities);
     }
 
-    controller_limitPositions();
+    limitPositions();
     positions.vertical = servoVertical;
     positions.horizontal = servoHorizontal;
 

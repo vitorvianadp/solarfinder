@@ -3,15 +3,24 @@
 #include "config.h"
 #include "display.h"
 
+DisplayClass Display;
+
+/************************************************************************
+ construtor
+*************************************************************************/
+DisplayClass::DisplayClass()
+{
+}
+
 /************************
- display_getInfo
+ getInfo
  Obtem dados dos sensores para exibir na interface
  entradas
    dados: vetor com as leituras dos 4 sensores de luminosidade
  saidas
    nenhuma
 *************************/
-void display_getInfo(sensorsReading sensorsReading){
+void DisplayClass::getInfo(sensorsReading sensorsReading){
     #ifdef DEBUG
         Serial.println("Leituras:");
         for (int i = 0; i < 4; i++){

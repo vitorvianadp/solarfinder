@@ -1,19 +1,24 @@
 #include "positioner.h"
 #include "config.h"
 
-#ifndef DEBUG
-    #include <Servo.h>
-    Servo horizontal; // servo horizontal no pino 9
-    Servo vertical; // servo vertical no pino 10
-#endif
+
+PositionerClass Positioner;
 
 /************************************************************************
- positioner_init
- Inicia os servomotores
- Parametros de entrada: nenhum
- Retorno: nenhum
+ construtor
 *************************************************************************/
-void positioner_init(void){
+PositionerClass::PositionerClass()
+{
+    begin();
+}
+
+/************************************************************************
+ begin
+    Inicia os servomotores
+    Parametros de entrada: nenhum
+    Retorno: nenhum
+*************************************************************************/
+void PositionerClass::begin(){
     // definir pinos dos servos na biblioteca servo.h
     #ifndef DEBUG
         horizontal.attach(SERVO_HOR_PIN);
@@ -25,12 +30,12 @@ void positioner_init(void){
 }
 
 /************************************************************************
- positioner_moveMotors
+ moveMotors
  Movimenta os motores
  Parametros de entrada: valores correspondentes aos servos
  Retorno: nenhum
 *************************************************************************/
-void positioner_moveMotors(servosPositions servosPositions){
+void PositionerClass::moveMotors(servosPositions servosPositions){
 
     #ifndef DEBUG
         vertical.write(servosPositions.vertical); //movimentação do servo

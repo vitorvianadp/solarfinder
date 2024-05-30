@@ -40,34 +40,34 @@ int executeAction(int actionCode)
     switch(actionCode)
     {
     case A01:
-        keyboard_debug("Modo manual selecionado.");
+        Keyboard.debug("Modo manual selecionado.");
         operationMode = MANUAL;
         break;
     case A02:
-        keyboard_debug("Modo automatico selecionado.");
+        Keyboard.debug("Modo automatico selecionado.");
         operationMode = AUTOMATIC;
         break;
     case A03:
-        keyboard_debug("Entrada de teclas para posicionar a placa.");
+        Keyboard.debug("Entrada de teclas para posicionar a placa.");
         retval = MOVE_MOTORS;
         break;
     case A04:
         // a principio uma acao so, a funcao seria chamada aqui e deveria tratar la dentro como a movimentacao deve ser feita
-        keyboard_debug("Movimentacao dos motores.");
-        positioner_moveMotors(controller_adjustPositions(operationMode, sensors_getLuminosity(), lastMovementKey));
+        Keyboard.debug("Movimentacao dos motores.");
+        Positioner.moveMotors(Controller.adjustPositions(operationMode, Sensors.getLuminosity(), lastMovementKey));
         break;
     case A05:
-        keyboard_debug("Leitura de luminosidade dos sensores.");
-        display_getInfo(sensors_getLuminosity());
+        Keyboard.debug("Leitura de luminosidade dos sensores.");
+        Display.getInfo(Sensors.getLuminosity());
         retval = MOVE_MOTORS;
         break;
     case A06:
         // funcao deve ser chamada aqui e tratar qual deve ser o novo modo de operacao
-        keyboard_debug("Modo de operacao alterado.");
+        Keyboard.debug("Modo de operacao alterado.");
         operationMode = 1 - operationMode; // switch
         break;
     case A07:
-        keyboard_debug("Placa agora esta travada na posicao definida.");
+        Keyboard.debug("Placa agora esta travada na posicao definida.");
         operationMode = NO_MODE;
         break;
     default:
@@ -135,7 +135,6 @@ void initStateMachine()
 void initSystem()
 {
    initStateMachine();
-   positioner_init();
    state = IDLE_CLIENT;
    internEvent = NO_EVENTS;
 } // initSystem
@@ -155,7 +154,7 @@ int obtainEvent()
     int event = NO_EVENTS;
     char* keys;
     char code;
-    keys = keyboard_getKeys();
+    keys = Keyboard.getKeys();
     code = keys[0];
 
     /*
@@ -248,11 +247,11 @@ void loop() {
         state = obtainNextState(state, eventCode);
         internEvent = executeAction(actionCode);
 
-        keyboard_debug("Estado: ", 0);
-        keyboard_debug(state, 0);
-        keyboard_debug(" Evento: ", 0);
-        keyboard_debug(eventCode, 0);
-        keyboard_debug(" Acao: ", 0);
-        keyboard_debug(actionCode);
+        Keyboard.debug("Estado: ", 0);
+        Keyboard.debug(state, 0);
+        Keyboard.debug(" Evento: ", 0);
+        Keyboard.debug(eventCode, 0);
+        Keyboard.debug(" Acao: ", 0);
+        Keyboard.debug(actionCode);
   }
 } // loop

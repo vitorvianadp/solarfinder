@@ -2,15 +2,27 @@
 #define DISPLAY_H_INCLUDED
 
 #include "config.h"
+#include "iDisplay.h"
 
-/************************
- display_getInfo
- Obtem dados dos sensores para exibir na interface
- entradas
-   dados: vetor com as leituras dos 4 sensores de luminosidade
- saidas
-   nenhuma
-*************************/
-extern void display_getInfo(sensorsReading sensorsReading);
+class DisplayClass: public DisplayInterface{
+    public:
+    /************************************************************************
+     construtor
+    *************************************************************************/
+    DisplayClass();
+
+    /************************
+     getInfo
+     Obtem dados dos sensores para exibir na interface
+     entradas
+      dados: vetor com as leituras dos 4 sensores de luminosidade
+     saidas
+      nenhuma
+    *************************/
+    void getInfo(sensorsReading sensorsReading);
+
+};
+
+extern DisplayClass Display;
 
 #endif // DISPLAY_H_INCLUDED

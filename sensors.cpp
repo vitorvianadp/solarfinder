@@ -1,18 +1,26 @@
 #include <Arduino.h>
 
 #include "config.h"
-#include "display.h"
+#include "sensors.h"
 
+SensorsClass Sensors;
+
+/************************************************************************
+ construtor
+*************************************************************************/
+SensorsClass::SensorsClass()
+{
+}
 
 /************************
- sensors_getLuminosity
+ getLuminosity
  Computa os valores de luminosidade detectada nos 4 LDRs
  entradas
    nenhuma
  saidas
    struct com as 4 leituras analogicas atuais dos sensores
 *************************/
-sensorsReading sensors_getLuminosity(){
+sensorsReading SensorsClass::getLuminosity(){
     sensorsReading luminosities;
 
     #ifdef DEBUG
