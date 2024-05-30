@@ -1,8 +1,6 @@
 #ifndef KEYBOARD_H_INCLUDED
 #define KEYBOARD_H_INCLUDED
 
-#define NO_INFO -1
-
 /************************
  keyboard_debug
  Funcao usada so para debugar, remover dps
@@ -21,7 +19,7 @@ extern void keyboard_debug(int value, int ln = 0);
  entradas
    nenhuma
  saidas
-   informacao recebida na interface ou NO_INFO
+   informacao recebida na interface
 *************************/
 extern char* keyboard_getKeys();
 
