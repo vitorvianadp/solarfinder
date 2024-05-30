@@ -1,4 +1,6 @@
-#include <Arduino.h>
+#include <Arduino_FreeRTOS.h>
+#include <queue.h>
+#include <semphr.h>
 
 /*
     PLACA SOLAR INTELIGENTE
@@ -11,13 +13,24 @@
 #include "positioner.h"
 #include "sensors.h"
 
-int eventCode;
+#define TASK1_INTERVAL 150
+#define TASK2_INTERVAL 100
+
 int actionCode;
 int state;
 int internEvent;
 int operationMode = NO_MODE;
 char lastMovementKey;
 stateTransitionMatrix stateTransition;
+
+/***********************************************************************
+ FreeRTOS
+ ***********************************************************************/
+void taskStateMachine(void *pvParameters);
+void taskObtainEvent(void *pvParameters);
+QueueHandle_t xQueue;
+SemaphoreHandle_t xBinarySemaphore;
+TaskHandle_t xTaskStateMachine, xTaskObtainEvent;
 
 /************************************************************************
  executeAction
@@ -140,67 +153,6 @@ void initSystem()
 } // initSystem
 
 /************************************************************************
- obtainEvent
- Obtem um evento, que pode ser da IHM ou do sensor
- Parametros de entrada: nenhum
- Retorno: codigo do evento
-*************************************************************************/
-/*
-TODO: implementar as condicoes para IHM real, adicionando header e source para os componentes do diagrama
-*/
-
-int obtainEvent()
-{
-    int event = NO_EVENTS;
-    char* keys;
-    char code;
-    keys = Keyboard.getKeys();
-    code = keys[0];
-
-    /*
-    evento:                        codigo   implementacao (onde recebe o codigo ou como ativar)
-    inicializar e escolher manual: 'm'      keyboard
-    inicializar e escolher auto:   'a'      keyboard
-    apertar setas para movimentar: 'i'      keyboard
-    movimentar os motores:         'r'      evento interno apos executar A03 ou A05
-    leitura dos sensores LDR:      'l'      task continua se estiver no modo automatico
-    mudar modo com o switch:       's'      keyboard
-    salvar posicao atual:          'p'      keyboard
-    */
-
-    switch (code)
-    {
-    case 'm':
-        event = SELECT_MANUAL;
-        break;
-    case 'a':
-        event = SELECT_AUTOMATIC;
-        break;
-    case 'i': // pensar ainda em como fazer a logica de movimentacao para cada lado, talvez usar keys[1]
-        event = INPUT_KEYS;
-        lastMovementKey = keys[1];
-        break;
-    case 'r': // dentro da propia funcao para movimentacao que deve ser checado o modo de operacao
-        event = MOVE_MOTORS;
-        break;
-    case 'l':
-        event = INPUT_SENSORS;
-        break;
-    case 's': // switch alterado -> tratamento deve ser feito dentro de keyboard.cpp msm
-        event = SWITCH_MODE;
-        break;
-    case 'p':
-        event = SAVE_POSITION;
-        break;
-    default:
-        break;
-    }
-
-    return event;
-
-} // obtainEvent
-
-/************************************************************************
  obtainAction
  Obtem uma acao da Matriz de transicao de estados
  Parametros de entrada: estado (int)
@@ -223,35 +175,156 @@ int obtainNextState(int state, int eventCode) {
 } // obtainNextState
 
 /************************************************************************
+ TASKS
+*************************************************************************/
+
+/************************************************************************
+ taskObtainEvent
+ Tarefa para obter um evento, que pode ser da IHM ou do sensor e colocar na fila
+ Parametros de entrada: nenhum
+ Retorno: codigo do evento
+*************************************************************************/
+char* keys;
+char inputCode;
+void taskObtainEvent(void *pvParameters)
+{
+    int eventCode;
+    BaseType_t xStatus;
+
+    for (;;){
+        eventCode = NO_EVENTS;
+
+        keys = Keyboard.getKeys();
+        inputCode = keys[0];
+
+        /*
+        evento                         codigo   implementacao (onde recebe o codigo ou como ativar)
+        inicializar e escolher manual: 'm'      keyboard
+        inicializar e escolher auto:   'a'      keyboard
+        apertar setas para movimentar: 'i'      keyboard
+        movimentar os motores:         'r'      evento interno apos executar A03 ou A05
+        leitura dos sensores LDR:      'l'      task continua se estiver no modo automatico
+        mudar modo com o switch:       's'      keyboard
+        salvar posicao atual:          'p'      keyboard
+        */
+
+        switch (inputCode) {
+            case 'm':
+                eventCode = SELECT_MANUAL;
+                xStatus = xQueueSendToBack( xQueue, &eventCode, 0 );
+                if( xStatus != pdPASS )
+                    Keyboard.debug("Erro ao enviar evento para fila");
+                break;
+            case 'a':
+                eventCode = SELECT_AUTOMATIC;
+                xStatus = xQueueSendToBack( xQueue, &eventCode, 0 );
+                if( xStatus != pdPASS )
+                    Keyboard.debug("Erro ao enviar evento para fila");
+                break;
+            case 'i': // pensar ainda em como fazer a logica de movimentacao para cada lado, talvez usar keys[1]
+                eventCode = INPUT_KEYS;
+                lastMovementKey = keys[1];
+                xStatus = xQueueSendToBack( xQueue, &eventCode, 0 );
+                if( xStatus != pdPASS )
+                    Keyboard.debug("Erro ao enviar evento para fila");
+                break;
+            case 'r': // dentro da propia funcao para movimentacao que deve ser checado o modo de operacao
+                eventCode = MOVE_MOTORS;
+                xStatus = xQueueSendToBack( xQueue, &eventCode, 0 );
+                if( xStatus != pdPASS )
+                    Keyboard.debug("Erro ao enviar evento para fila");
+                break;
+            case 'l':
+                eventCode = INPUT_SENSORS;
+                xStatus = xQueueSendToBack( xQueue, &eventCode, 0 );
+                if( xStatus != pdPASS )
+                    Keyboard.debug("Erro ao enviar evento para fila");
+                break;
+            case 's': // switch alterado -> tratamento deve ser feito dentro de keyboard.cpp msm
+                eventCode = SWITCH_MODE;
+                xStatus = xQueueSendToBack( xQueue, &eventCode, 0 );
+                if( xStatus != pdPASS )
+                    Keyboard.debug("Erro ao enviar evento para fila");
+                break;
+            case 'p':
+                eventCode = SAVE_POSITION;
+                xStatus = xQueueSendToBack( xQueue, &eventCode, 0 );
+                if( xStatus != pdPASS )
+                    Keyboard.debug("Erro ao enviar evento para fila");
+                break;
+            default:
+                break;
+        }
+
+        return;
+    }
+} // taskObtainEvent
+
+
+/************************************************************************
+ taskStateMachine
+ Tarefa para executar a maquina de estados, retira eventos da fila
+ Parametros de entrada: nenhum
+ Retorno: nenhum
+*************************************************************************/
+void taskStateMachine(void *pvParameters) {
+    int eventCode;
+    BaseType_t xStatus;
+
+    for( ;; ) {
+        if( xQueueReceive( xQueue, &eventCode, portMAX_DELAY ) == pdPASS ) {
+            if (eventCode != NO_EVENTS)
+            {
+                actionCode = obtainAction(state, eventCode);
+                state = obtainNextState(state, eventCode);
+                internEvent = executeAction(actionCode);
+
+                Keyboard.debug("Estado: ", 0);
+                Keyboard.debug(state, 0);
+                Keyboard.debug(" Evento: ", 0);
+                Keyboard.debug(eventCode, 0);
+                Keyboard.debug(" Acao: ", 0);
+                Keyboard.debug(actionCode);
+
+                // Descomente para imprimir ocupação do stack
+                // Serial.print("Task stacks remaining: ");
+                // Serial.print(uxTaskGetStackHighWaterMark(xTaskMaqEstados)); Serial.print(" ");
+                // Serial.println(uxTaskGetStackHighWaterMark(xTaskObterEvento));
+            }
+        }
+        else {
+            Serial.println("Erro ao receber evento da fila");
+        }
+    }
+} // taskStateMachine
+
+/************************************************************************
  Main
- Loop principal de controle que executa a maquina de estados
+ Setup e Loop principal de controle que executa a maquina de estados
  Parametros de entrada: nenhum
  Retorno: nenhum
 *************************************************************************/
 void setup() {
-  Serial.begin(9600);
+    Serial.begin(9600);
 
-  initSystem();
-  Serial.println("Sistema iniciado");
+    initSystem();
+    Serial.println("Sistema iniciado");
+
+    // configure tasks
+    xBinarySemaphore = xSemaphoreCreateBinary();
+    xQueue = xQueueCreate(5, sizeof(int));
+    if(xQueue != NULL && xBinarySemaphore != NULL)
+    {
+        xTaskCreate(taskStateMachine,"taskMaqEstados", TASK1_INTERVAL, NULL, 2, &xTaskStateMachine);
+        xTaskCreate(taskObtainEvent,"taskObterEvento", TASK2_INTERVAL, NULL, 1, &xTaskObtainEvent);
+        vTaskStartScheduler();
+    }
+    else
+    {
+        Keyboard.debug("Erro na criacao da fila.");
+    }
+
 } // setup
 
 void loop() {
-    if (internEvent == NO_EVENTS) {
-        eventCode = obtainEvent();
-    } else {
-        eventCode = internEvent;
-    }
-    if (eventCode != NO_EVENTS)
-    {
-        actionCode = obtainAction(state, eventCode);
-        state = obtainNextState(state, eventCode);
-        internEvent = executeAction(actionCode);
-
-        Keyboard.debug("Estado: ", 0);
-        Keyboard.debug(state, 0);
-        Keyboard.debug(" Evento: ", 0);
-        Keyboard.debug(eventCode, 0);
-        Keyboard.debug(" Acao: ", 0);
-        Keyboard.debug(actionCode);
-  }
 } // loop
