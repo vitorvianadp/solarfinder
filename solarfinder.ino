@@ -1,14 +1,16 @@
-#include <stdio.h>
+#include <Arduino.h>
 
 /*
     PLACA SOLAR INTELIGENTE
 */
 
 #include "config.h"
+#include "keyboard.h"
 
 int eventCode;
 int actionCode;
 int state;
+int internEvent;
 stateTransitionMatrix stateTransition;
 
 /************************************************************************
@@ -32,27 +34,29 @@ int executeAction(int actionCode)
     switch(actionCode)
     {
     case A01:
-        printf("Modo manual selecionado.\n");
+        keyboard_debug("Modo manual selecionado.", 1);
         break;
     case A02:
-        printf("Modo automatico selecionado.\n");
+        keyboard_debug("Modo automatico selecionado.", 1);
         break;
     case A03:
-        printf("Entrada de teclas para posicionar a placa.\n");
+        keyboard_debug("Entrada de teclas para posicionar a placa.", 1);
+        retval = MOVE_MOTORS;
         break;
     case A04:
         // a principio uma acao so, a funcao seria chamada aqui e deveria tratar la dentro como a movimentacao deve ser feita
-        printf("Movimentacao dos motores.\n");
+        keyboard_debug("Movimentacao dos motores.", 1);
         break;
     case A05:
-        printf("Leitura de luminosidade dos sensores.\n");
+        keyboard_debug("Leitura de luminosidade dos sensores.", 1);
+        retval = MOVE_MOTORS;
         break;
     case A06:
         // funcao deve ser chamada aqui e tratar qual deve ser o novo modo de operacao
-        printf("Modo de operacao alterado.\n");
+        keyboard_debug("Modo de operacao alterado.", 1);
         break;
     case A07:
-        printf("Placa agora esta travada na posicao definida.\n");
+        keyboard_debug("Placa agora esta travada na posicao definida.", 1);
         break;
     } // switch
 
@@ -116,6 +120,8 @@ void initStateMachine()
 void initSystem()
 {
    initStateMachine();
+   state = IDLE_CLIENT;
+   internEvent = NO_EVENTS;
 } // initSystem
 
 /************************************************************************
@@ -127,100 +133,52 @@ void initSystem()
 /*
 TODO: implementar as condicoes para IHM real, adicionando header e source para os componentes do diagrama
 */
-char* keys;
-char buf[10];
-
-char* ihm_readKeys()
-{
-    printf("obter teclas:");
-    scanf("%s", buf);
-    return buf;
-}
-
-int decodeSelectManual()
-{
-    if (keys[0] == 'm') // modo manual
-    {
-        return true;
-    }
-    return false;
-}// decodeSelectManual
-
-int decodeSelectAutomatic()
-{
-    if (keys[0] == 'a')
-    {
-        return true;
-    }
-    return false;
-}// decodeSelectAutomatic
-
-int decodeInputKeys()
-{
-    if (keys[0] == 'k') // movimentacao pelo teclado
-    {
-        return true;
-    }
-    return false;
-}// decodeInputKeys
-
-int decodeMoveMotors()
-{
-    if (keys[0] == 'r') // rotacao da placa
-    {
-        return true;
-    }
-    return false;
-}// decodeMoveMotors
-
-int decodeInputSensors()
-{
-    if (keys[0] == 'l') // luminosidade nos sensores
-    {
-        return true;
-    }
-    return false;
-}// decodeInputSensors
-
-int decodeSwitchMode()
-{
-    if (keys[0] == 's') // troca de modo
-    {
-        return true;
-    }
-    return false;
-}// decodeSwitchMode
-
-int decodeSavePosition()
-{
-    if (keys[0] == 'p') // salva posicao atual da placa
-    {
-        return true;
-    }
-    return false;
-}// decodeSavePosition
 
 int obtainEvent()
 {
-    int retval = NO_EVENTS;
+    int event = NO_EVENTS;
+    char code;
+    code = keyboard_getKeys()[0];
 
-    keys = ihm_readKeys();
-    if (decodeSelectManual())
-        return SELECT_MANUAL;
-    if (decodeSelectAutomatic())
-        return SELECT_AUTOMATIC;
-    if (decodeInputKeys())
-        return INPUT_KEYS;
-    if (decodeMoveMotors())
-        return MOVE_MOTORS;
-    if (decodeInputSensors())
-        return INPUT_SENSORS;
-    if (decodeSwitchMode())
-        return SWITCH_MODE;
-    if (decodeSavePosition())
-        return SAVE_POSITION;
+    /*
+    evento:                        codigo   implementacao (onde recebe o codigo ou como ativar)
+    inicializar e escolher manual: 'm'      keyboard
+    inicializar e escolher auto:   'a'      keyboard
+    apertar setas para movimentar: 'k'      keyboard
+    movimentar os motores:         'r'      evento interno apos executar A03 ou A05
+    leitura dos sensores LDR:      'l'      task continua se estiver no modo automatico
+    mudar modo com o switch:       's'      keyboard
+    salvar posicao atual:          'p'      keyboard
+    */
 
-    return retval;
+    switch (code)
+    {
+    case 'm':
+        event = SELECT_MANUAL;
+        break;
+    case 'a':
+        event = SELECT_AUTOMATIC;
+        break;
+    case 'k': // pensar ainda em como fazer a logica de movimentacao para cada lado, talvez usar keys[1]
+        event = INPUT_KEYS;
+        break;
+    case 'r': // dentro da propia funcao para movimentacao que deve ser checado o modo de operacao
+        event = MOVE_MOTORS;
+        break;
+    case 'l':
+        event = INPUT_SENSORS;
+        break;
+    case 's': // switch alterado -> tratamento deve ser feito dentro de keyboard.cpp msm
+        event = SWITCH_MODE;
+        break;
+    case 'p':
+        event = SAVE_POSITION;
+        break;
+    default:
+        break;
+    }
+
+    return event;
 
 } // obtainEvent
 
@@ -252,19 +210,14 @@ int obtainNextState(int state, int eventCode) {
  Parametros de entrada: nenhum
  Retorno: nenhum
 *************************************************************************/
-int main() {
-
-  int eventCode;
-  int actionCode;
-  int state;
-  int internEvent;
-
-  state = IDLE_CLIENT;
-  internEvent = NO_EVENTS;
+void setup() {
+  Serial.begin(9600);
 
   initSystem();
-  printf("Sistema iniciado.\n");
-  while (true) {
+  Serial.println("Sistema iniciado");
+} // setup
+
+void loop() {
     if (internEvent == NO_EVENTS) {
         eventCode = obtainEvent();
     } else {
@@ -272,10 +225,15 @@ int main() {
     }
     if (eventCode != NO_EVENTS)
     {
-       actionCode = obtainAction(state, eventCode);
-       state = obtainNextState(state, eventCode);
-       internEvent = executeAction(actionCode);
-       printf("Estado: %d Evento: %d Acao:%d\n", state, eventCode, actionCode);
-    }
-  } // while true
-} // main
+        actionCode = obtainAction(state, eventCode);
+        state = obtainNextState(state, eventCode);
+        internEvent = executeAction(actionCode);
+
+        keyboard_debug("Estado: ");
+        keyboard_debug(state);
+        keyboard_debug(" Evento: ");
+        keyboard_debug(eventCode);
+        keyboard_debug(" Acao: ");
+        keyboard_debug(actionCode, 1);
+  }
+} // loop
