@@ -29,7 +29,6 @@ stateTransitionMatrix stateTransition;
 void taskStateMachine(void *pvParameters);
 void taskObtainEvent(void *pvParameters);
 QueueHandle_t xQueue;
-TaskHandle_t xTaskStateMachine, xTaskObtainEvent;
 
 /************************************************************************
  executeAction
@@ -314,9 +313,8 @@ void setup() {
     xQueue = xQueueCreate(5, sizeof(int));
     if(xQueue != NULL)
     {
-        xTaskCreate(taskStateMachine,"taskMaqEstados", TASK1_INTERVAL, NULL, 2, &xTaskStateMachine);
-        xTaskCreate(taskObtainEvent,"taskObterEvento", TASK2_INTERVAL, NULL, 1, &xTaskObtainEvent);
-        vTaskStartScheduler();
+        xTaskCreate(taskStateMachine,"taskMaqEstados", TASK1_INTERVAL, NULL, 2, NULL);
+        xTaskCreate(taskObtainEvent,"taskObterEvento", TASK2_INTERVAL, NULL, 1, NULL);
     }
     else
     {
