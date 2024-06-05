@@ -20,7 +20,7 @@ KeyboardClass::KeyboardClass()
  saidas
    nenhuma
 *************************/
-void KeyboardClass::debug(char *texto, int ln = 1)
+void KeyboardClass::debug(char *texto, int ln)
 {
     #ifdef DEBUG
         if (ln == 0)
@@ -31,7 +31,7 @@ void KeyboardClass::debug(char *texto, int ln = 1)
 }
 
 //override
-void KeyboardClass::debug(int value, int ln = 1)
+void KeyboardClass::debug(int value, int ln)
 {
     #ifdef DEBUG
         if (ln == 0)

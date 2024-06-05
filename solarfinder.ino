@@ -213,44 +213,44 @@ void taskObtainEvent(void *pvParameters)
                 eventCode = SELECT_MANUAL;
                 xStatus = xQueueSendToBack( xQueue, &eventCode, 0 );
                 if( xStatus != pdPASS )
-                    Keyboard.debug("Erro ao enviar evento para fila");
+                    Keyboard.debug((char*)"Erro ao enviar evento para fila", 1);
                 break;
             case 'a':
                 eventCode = SELECT_AUTOMATIC;
                 xStatus = xQueueSendToBack( xQueue, &eventCode, 0 );
                 if( xStatus != pdPASS )
-                    Keyboard.debug("Erro ao enviar evento para fila");
+                    Keyboard.debug((char*)"Erro ao enviar evento para fila",1);
                 break;
             case 'i': // pensar ainda em como fazer a logica de movimentacao para cada lado, talvez usar keys[1]
                 eventCode = INPUT_KEYS;
                 lastMovementKey = keys[1];
                 xStatus = xQueueSendToBack( xQueue, &eventCode, 0 );
                 if( xStatus != pdPASS )
-                    Keyboard.debug("Erro ao enviar evento para fila");
+                    Keyboard.debug((char*)"Erro ao enviar evento para fila",1);
                 break;
             case 'r': // dentro da propia funcao para movimentacao que deve ser checado o modo de operacao
                 eventCode = MOVE_MOTORS;
                 xStatus = xQueueSendToBack( xQueue, &eventCode, 0 );
                 if( xStatus != pdPASS )
-                    Keyboard.debug("Erro ao enviar evento para fila");
+                    Keyboard.debug((char*)"Erro ao enviar evento para fila",1);
                 break;
             case 'l':
                 eventCode = INPUT_SENSORS;
                 xStatus = xQueueSendToBack( xQueue, &eventCode, 0 );
                 if( xStatus != pdPASS )
-                    Keyboard.debug("Erro ao enviar evento para fila");
+                    Keyboard.debug((char*)"Erro ao enviar evento para fila",1);
                 break;
             case 's': // switch alterado -> tratamento deve ser feito dentro de keyboard.cpp msm
                 eventCode = SWITCH_MODE;
                 xStatus = xQueueSendToBack( xQueue, &eventCode, 0 );
                 if( xStatus != pdPASS )
-                    Keyboard.debug("Erro ao enviar evento para fila");
+                    Keyboard.debug((char*)"Erro ao enviar evento para fila",1);
                 break;
             case 'p':
                 eventCode = SAVE_POSITION;
                 xStatus = xQueueSendToBack( xQueue, &eventCode, 0 );
                 if( xStatus != pdPASS )
-                    Keyboard.debug("Erro ao enviar evento para fila");
+                    Keyboard.debug((char*)"Erro ao enviar evento para fila",1);
                 break;
             default:
                 break;
@@ -279,12 +279,12 @@ void taskStateMachine(void *pvParameters) {
                 state = obtainNextState(state, eventCode);
                 internEvent = executeAction(actionCode);
 
-                Keyboard.debug("Estado: ", 0);
+                Keyboard.debug((char*)"Estado: ", 0);
                 Keyboard.debug(state, 0);
-                Keyboard.debug(" Evento: ", 0);
+                Keyboard.debug((char*)" Evento: ", 0);
                 Keyboard.debug(eventCode, 0);
-                Keyboard.debug(" Acao: ", 0);
-                Keyboard.debug(actionCode);
+                Keyboard.debug((char*)" Acao: ", 0);
+                Keyboard.debug(actionCode,1);
 
                 // Descomente para imprimir ocupação do stack
                 // Serial.print("Task stacks remaining: ");
@@ -293,7 +293,7 @@ void taskStateMachine(void *pvParameters) {
             }
         }
         else {
-            Serial.println("Erro ao receber evento da fila");
+            Serial.println((char*)"Erro ao receber evento da fila");
         }
     }
 } // taskStateMachine
@@ -308,7 +308,7 @@ void setup() {
     Serial.begin(9600);
 
     initSystem();
-    Serial.println("Sistema iniciado");
+    Serial.println((char*)"Sistema iniciado");
 
     // configure tasks
     xBinarySemaphore = xSemaphoreCreateBinary();
@@ -321,7 +321,7 @@ void setup() {
     }
     else
     {
-        Keyboard.debug("Erro na criacao da fila.");
+        Keyboard.debug((char*)"Erro na criacao da fila.",1);
     }
 
 } // setup

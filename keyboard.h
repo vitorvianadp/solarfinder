@@ -18,8 +18,8 @@ class KeyboardClass: public KeyboardInterface{
      saidas
        nenhuma
     *************************/
-    void debug(char* texto, int ln = 1);
-    void debug(int value, int ln = 1); // override
+    void debug(char* texto, int ln);
+    void debug(int value, int ln); // override
 
     /************************
      getKeys

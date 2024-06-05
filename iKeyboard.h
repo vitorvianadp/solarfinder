@@ -13,8 +13,8 @@ class KeyboardInterface {
      saidas
        nenhuma
     *************************/
-    virtual void debug(char* texto, int ln = 1) = 0;
-    virtual void debug(int value, int ln = 1) = 0; // override
+    virtual void debug(char* texto, int ln) = 0;
+    virtual void debug(int value, int ln) = 0; // override
 
     /************************
      getKeys
