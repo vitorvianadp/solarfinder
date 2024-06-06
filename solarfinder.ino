@@ -20,6 +20,7 @@ const int QueueElementSize = 10;
     PLACA SOLAR INTELIGENTE
 */
 
+#include <WiFi.h>
 #include "config.h"
 #include "controller.h"
 #include "display.h"
@@ -29,6 +30,11 @@ const int QueueElementSize = 10;
 
 #define TASK1_INTERVAL 150
 #define TASK2_INTERVAL 100
+
+const char *ssid = "login";
+const char *password = "senha";
+
+//NetworkServer server(80);
 
 int actionCode;
 int state;
@@ -84,7 +90,7 @@ int executeAction(int actionCode)
     case A04:
         // a principio uma acao so, a funcao seria chamada aqui e deveria tratar la dentro como a movimentacao deve ser feita
         //Keyboard.debug((char*)"Movimentacao dos motores.",1);
-        Positioner.moveMotors(Controller.adjustPositions(operationMode, Sensors.getLuminosity(), lastMovementKey));
+        //Positioner.moveMotors(Controller.adjustPositions(operationMode, Sensors.getLuminosity(), lastMovementKey));
         Serial.println("Move motor");
         if (operationMode == AUTOMATIC){
           retval = INPUT_SENSORS;
@@ -264,7 +270,7 @@ void taskObtainEvent(void *pvParameters)
                 break;
             case 'i': // pensar ainda em como fazer a logica de movimentacao para cada lado, talvez usar keys[1]
                 eventCode = INPUT_KEYS;
-                lastMovementKey = keys[1];
+                lastMovementKey = keys[1]; 
                 xStatus = xQueueSendToBack( QueueHandle, &eventCode, 0 );
                 //if( xStatus != pdPASS )
                     //Keyboard.debug((char*)"Erro ao enviar evento para fila", 1);
@@ -359,6 +365,25 @@ void setup() {
     delay(10);
   }
 
+  Serial.println();
+  Serial.println();
+  Serial.print("Connecting to ");
+  Serial.println(ssid);
+
+  WiFi.begin(ssid, password);
+
+  while (WiFi.status() != WL_CONNECTED) {
+    delay(500);
+    Serial.print(".");
+  }
+
+  Serial.println("");
+  Serial.println("WiFi connected.");
+  Serial.println("IP address: ");
+  Serial.println(WiFi.localIP());
+
+  
+  Keyboard.init();
   initSystem();
   //Serial.println("Sistema iniciado");
 

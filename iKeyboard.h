@@ -26,6 +26,7 @@ class KeyboardInterface {
        informacao recebida na interface
     *************************/
     virtual char* getKeys() = 0;
+    virtual void init() = 0;
 };
 
 #endif // IKEYBOARD_H_INCLUDED

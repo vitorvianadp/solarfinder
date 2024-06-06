@@ -31,6 +31,7 @@ class KeyboardClass: public KeyboardInterface{
        informacao recebida na interface
     *************************/
     char* getKeys();
+    void init(); 
 
     private:
     char buf[10];

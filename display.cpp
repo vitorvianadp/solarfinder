@@ -21,7 +21,7 @@ DisplayClass::DisplayClass()
    nenhuma
 *************************/
 void DisplayClass::getInfo(sensorsReading sensorsReading){
-    #ifdef DEBUG
+    #ifndef DEBUG
         Serial.println("Leituras:");
         for (int i = 0; i < 4; i++){
             Serial.print("Sensor ");

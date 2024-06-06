@@ -4,7 +4,7 @@ document.getElementsByClassName('left arr')[0].addEventListener('click', () => m
 document.getElementsByClassName('right arr')[0].addEventListener('click', () => makeRequest('right'));
 
 function makeRequest(terminal) {
-    var url = `http://192.168.15.3/${terminal}`;
+    var url = `http://192.168.15.12/${terminal}`;
     var xhr = new XMLHttpRequest();
     xhr.onload = function() {
         if (xhr.status >= 200 && xhr.status < 300) {
