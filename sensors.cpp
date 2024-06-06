@@ -24,14 +24,17 @@ sensorsReading SensorsClass::getLuminosity(){
     sensorsReading luminosities;
 
     #ifdef DEBUG
-        luminosities.values[0] = 450;
+        luminosities.values[0] = analogRead(LDRLT_PIN);
         luminosities.values[1] = 550;
         luminosities.values[2] = 650;
         luminosities.values[3] = 750;
     #endif
 
     //leitura dos sensores LDR
-    // luminosities.values[0] = analogRead(LDRLT_PIN); // superior esquerdo
+    luminosities.values[0] = analogRead(LDRLT_PIN); // superior esquerdo
+    luminosities.values[1] = 0;
+    luminosities.values[2] = 0;
+    luminosities.values[3] = 0;
     // luminosities.values[1] = analogRead(LDRRT_PIN); // superior direito
     // luminosities.values[2] = analogRead(LDRLD_PIN); // inferior esquerdo
     // luminosities.values[3] = analogRead(LDRRD_PIN); // inferior direito

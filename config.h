@@ -3,7 +3,7 @@
 
 #include <Arduino.h>
 
-#define DEBUG
+//#define DEBUG
 
 #define true  1
 #define false 0
@@ -19,7 +19,7 @@
 // ANALOGICOS
 
 // SENSORES
-#define LDRLT_PIN A0 //LDR superior esquerdo
+#define LDRLT_PIN 35 //LDR superior esquerdo
 #define LDRRT_PIN A2 //LDR superior direito
 #define LDRLD_PIN A1 //LDR inferior esquerdo
 #define LDRRD_PIN A3 //LDR inferior direito
@@ -30,7 +30,7 @@
 //DIGITAIS
 
 // SERVOS
-#define SERVO_VERT_PIN 10
+#define SERVO_VERT_PIN 32
 #define SERVO_HOR_PIN 9
 
 // POSICOES INICIAIS DOS SERVOS

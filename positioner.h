@@ -4,7 +4,7 @@
 #include "config.h"
 #include "iPositioner.h"
 #ifndef DEBUG
-    #include <Servo.h>
+    #include <ESP32Servo.h>
 #endif
 
 class PositionerClass: public PositionerInterface{
