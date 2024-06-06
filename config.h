@@ -19,7 +19,7 @@
 // ANALOGICOS
 
 // SENSORES
-#define LDRLT_PIN A0 //LDR superior esquerdo
+#define LDRLT_PIN 35 //LDR superior esquerdo
 #define LDRRT_PIN A2 //LDR superior direito
 #define LDRLD_PIN A1 //LDR inferior esquerdo
 #define LDRRD_PIN A3 //LDR inferior direito

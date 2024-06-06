@@ -41,10 +41,10 @@ void PositionerClass::moveMotors(servosPositions servosPositions){
         vertical.write(servosPositions.vertical); //movimentação do servo
         horizontal.write(servosPositions.horizontal);
     #else
-        Serial.print("Servo vertical: ");
-        Serial.println(servosPositions.vertical);
-        Serial.print("Servo horizontal: ");
-        Serial.println(servosPositions.horizontal);
+        // Serial.print("Servo vertical: ");
+        // Serial.println(servosPositions.vertical);
+        // Serial.print("Servo horizontal: ");
+        // Serial.println(servosPositions.horizontal);
     #endif
 
 }
