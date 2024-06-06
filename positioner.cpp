@@ -40,6 +40,10 @@ void PositionerClass::moveMotors(servosPositions servosPositions){
     #ifndef DEBUG
         vertical.write(servosPositions.vertical); //movimentação do servo
         horizontal.write(servosPositions.horizontal);
+        Serial.print("Servo vertical: ");
+        Serial.println(servosPositions.vertical);
+        Serial.print("Servo horizontal: ");
+        Serial.println(servosPositions.horizontal);
     #else
         // Serial.print("Servo vertical: ");
         // Serial.println(servosPositions.vertical);

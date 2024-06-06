@@ -84,7 +84,7 @@ int executeAction(int actionCode)
     case A04:
         // a principio uma acao so, a funcao seria chamada aqui e deveria tratar la dentro como a movimentacao deve ser feita
         //Keyboard.debug((char*)"Movimentacao dos motores.",1);
-        //Positioner.moveMotors(Controller.adjustPositions(operationMode, Sensors.getLuminosity(), lastMovementKey));
+        Positioner.moveMotors(Controller.adjustPositions(operationMode, Sensors.getLuminosity(), lastMovementKey));
         Serial.println("Move motor");
         if (operationMode == AUTOMATIC){
           retval = INPUT_SENSORS;

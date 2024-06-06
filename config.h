@@ -3,7 +3,7 @@
 
 #include <Arduino.h>
 
-#define DEBUG
+//#define DEBUG
 
 #define true  1
 #define false 0
@@ -30,7 +30,7 @@
 //DIGITAIS
 
 // SERVOS
-#define SERVO_VERT_PIN 10
+#define SERVO_VERT_PIN 32
 #define SERVO_HOR_PIN 9
 
 // POSICOES INICIAIS DOS SERVOS
