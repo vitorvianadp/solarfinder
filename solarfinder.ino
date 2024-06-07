@@ -244,6 +244,9 @@ void taskObtainEvent(void *pvParameters)
         salvar posicao atual:          'p'      keyboard
         */
 
+        if (inputCode == 's')
+          Display.activate(false);
+
         if (eventCode == NO_EVENTS){
           switch (inputCode) {
               case 'm':
@@ -369,7 +372,7 @@ void taskReadSensors(void *pvParameters) {
 
     while(Display.isActive()) {
       Display.getInfo(Sensors.getLuminosity());
-      //internEvent = MOVE_MOTORS;
+      internEvent = INPUT_SENSORS;
       Serial.println("periodico");
       vTaskDelayUntil( &xLastWakeTime, xDelay500ms );
     }

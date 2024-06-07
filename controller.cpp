@@ -44,7 +44,7 @@ void ControllerClass::automatic(sensorsReading luminosities){
 
     // Calculo de dtime (delay time) e tol (tolerancia) usando os potenciometros
     int dtime = 3; //analogRead(POTENCIOMETRO_TEMPO_PIN)/20;
-    int tol = 5; //analogRead(POTENCIOMETRO_TOLER_PIN);
+    int tol = 100; //analogRead(POTENCIOMETRO_TOLER_PIN);
     #ifdef DEBUG
         tol = 0;
     #endif
@@ -62,9 +62,9 @@ void ControllerClass::automatic(sensorsReading luminosities){
     if (-1*tol > dvert || dvert > tol) // se a diferença entre os valores for maior que a tolerância, movimentar
     {
         if (avt > avd) // se o valor medio superior for maior que o inferior, movimenta para cima
-            servoVertical += 10;
+            servoVertical += 5;
         else if (avt < avd) // se o valor medio inferior for maior que o superior, movimenta para baixo
-            servoVertical -= 10;
+            servoVertical -= 5;
     }
 
 
@@ -72,9 +72,9 @@ void ControllerClass::automatic(sensorsReading luminosities){
     if (-1*tol > dhoriz || dhoriz > tol) //mesmo procedimento, mas para o horizontal
     {
         if (avl > avr)
-            servoHorizontal -= 10;
+            servoHorizontal -= 5;
         else if (avl < avr)
-            servoHorizontal += 10;
+            servoHorizontal += 5;
         else // avl = avr
             delay(5000);
     }
@@ -101,7 +101,7 @@ void ControllerClass::automatic(sensorsReading luminosities){
     //     // Serial.print e Serial.println adicionam um delay grande (servo vai se mover mais devagar)
     // #endif
 
-    delay(dtime);
+    //delay(dtime);
 }
 
 /************************************************************************
