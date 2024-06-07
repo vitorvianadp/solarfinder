@@ -32,8 +32,8 @@ const int QueueElementSize = 10;
 #define TASK1_INTERVAL 150
 #define TASK2_INTERVAL 100
 
-const char *ssid = "Galaxyvv";
-const char *password = "uhyy9362";
+const char *ssid = "viana_2g";
+const char *password = "1110628000";
 
 //NetworkServer server(80);
 
@@ -359,6 +359,8 @@ void taskStateMachine(void *pvParameters) {
 
 void taskReadSensors(void *pvParameters) {
   TickType_t xLastWakeTime;
+  BaseType_t xStatus;
+
   const TickType_t xDelay500ms = pdMS_TO_TICKS( SENSORS_DELAY );
 
   for( ;; ) {
@@ -367,7 +369,7 @@ void taskReadSensors(void *pvParameters) {
 
     while(Display.isActive()) {
       Display.getInfo(Sensors.getLuminosity());
-      internEvent = INPUT_SENSORS;
+      //internEvent = MOVE_MOTORS;
       Serial.println("periodico");
       vTaskDelayUntil( &xLastWakeTime, xDelay500ms );
     }
@@ -399,6 +401,10 @@ void setup() {
   Serial.println("IP address: ");
   Serial.println(WiFi.localIP());
 
+  pinMode(LDRLT_PIN, INPUT);
+  pinMode(LDRRT_PIN, INPUT);
+  pinMode(LDRLD_PIN, INPUT);
+  pinMode(LDRRD_PIN, INPUT);
 
   Keyboard.init();
   initSystem();

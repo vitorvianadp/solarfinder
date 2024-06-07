@@ -19,10 +19,10 @@
 // ANALOGICOS
 
 // SENSORES
-#define LDRLT_PIN 34 //LDR superior esquerdo
-#define LDRRT_PIN 35 //LDR superior direito
+#define LDRLT_PIN 35 //LDR superior esquerdo
+#define LDRRT_PIN 33 //LDR superior direito
 #define LDRLD_PIN 32 //LDR inferior esquerdo
-#define LDRRD_PIN 33 //LDR inferior direito
+#define LDRRD_PIN 34 //LDR inferior direito
 //POTENCIOMETROS
 #define POTENCIOMETRO_TEMPO_PIN 4 //potenciômetro para ajuste temporal
 #define POTENCIOMETRO_TOLER_PIN 5   // potenciômetro para ajuste de tolerância
@@ -30,14 +30,14 @@
 //DIGITAIS
 
 // SERVOS
-#define SERVO_VERT_PIN 32
-#define SERVO_HOR_PIN 9
+#define SERVO_VERT_PIN 18
+#define SERVO_HOR_PIN 19
 
 // POSICOES INICIAIS DOS SERVOS
 #define SERVO_HOR_INITIAL 100
 #define SERVO_VERT_INITIAL 45
 
-#define SENSORS_DELAY 2000
+#define SENSORS_DELAY 100
 
 // ESTADOS
 enum states { IDLE_CLIENT, MANUAL_OPERATION, AUTOMATIC_OPERATION, MANUAL_DATA_PROCESSING, AUTOMATIC_DATA_PROCESSING };
