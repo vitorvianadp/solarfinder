@@ -14,6 +14,8 @@ class DisplayInterface {
       nenhuma
     *************************/
     virtual void getInfo(sensorsReading sensorsReading) = 0;
+    virtual bool isActive() = 0;
+    virtual void activate(bool command) = 0;
 };
 
 #endif // IDISPLAY_H_INCLUDED

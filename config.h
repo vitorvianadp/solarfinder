@@ -24,8 +24,8 @@
 #define LDRLD_PIN 32 //LDR inferior esquerdo
 #define LDRRD_PIN 33 //LDR inferior direito
 //POTENCIOMETROS
-#define POTENCIOMETRO_TEMPO_PIN A4 //potenciômetro para ajuste temporal
-#define POTENCIOMETRO_TOLER_PIN A5   // potenciômetro para ajuste de tolerância
+#define POTENCIOMETRO_TEMPO_PIN 4 //potenciômetro para ajuste temporal
+#define POTENCIOMETRO_TOLER_PIN 5   // potenciômetro para ajuste de tolerância
 
 //DIGITAIS
 
@@ -36,6 +36,8 @@
 // POSICOES INICIAIS DOS SERVOS
 #define SERVO_HOR_INITIAL 100
 #define SERVO_VERT_INITIAL 45
+
+#define SENSORS_DELAY 2000
 
 // ESTADOS
 enum states { IDLE_CLIENT, MANUAL_OPERATION, AUTOMATIC_OPERATION, MANUAL_DATA_PROCESSING, AUTOMATIC_DATA_PROCESSING };

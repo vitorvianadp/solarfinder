@@ -10,6 +10,7 @@
 
 // Define Queue handle
 QueueHandle_t QueueHandle;
+SemaphoreHandle_t SemaphoreHandle;
 const int QueueElementSize = 10;
 // typedef struct {
 //   char line[MAX_LINE_LENGTH];
@@ -31,8 +32,8 @@ const int QueueElementSize = 10;
 #define TASK1_INTERVAL 150
 #define TASK2_INTERVAL 100
 
-const char *ssid = "login";
-const char *password = "senha";
+const char *ssid = "Galaxyvv";
+const char *password = "uhyy9362";
 
 //NetworkServer server(80);
 
@@ -49,6 +50,7 @@ stateTransitionMatrix stateTransition;
  ***********************************************************************/
 void taskStateMachine(void *pvParameters);
 void taskObtainEvent(void *pvParameters);
+void taskReadSensors(void *pvParameters);
 // QueueHandle_t xQueue;
 // TaskHandle_t xTaskStateMachine, xTaskObtainEvent;
 //void TaskWriteToSerial(void *pvParameters);
@@ -81,7 +83,9 @@ int executeAction(int actionCode)
     case A02:
         //Keyboard.debug((char*)"Modo automatico selecionado.",1);
         operationMode = AUTOMATIC;
-        retval = INPUT_SENSORS;
+        Display.activate(true);
+        if( xSemaphoreGive(SemaphoreHandle) != pdPASS )
+          Serial.println("Erro ao enviar para semáforo");
         break;
     case A03:
         //Keyboard.debug((char*)"Entrada de teclas para posicionar a placa.",1);
@@ -90,15 +94,12 @@ int executeAction(int actionCode)
     case A04:
         // a principio uma acao so, a funcao seria chamada aqui e deveria tratar la dentro como a movimentacao deve ser feita
         //Keyboard.debug((char*)"Movimentacao dos motores.",1);
-        //Positioner.moveMotors(Controller.adjustPositions(operationMode, Sensors.getLuminosity(), lastMovementKey));
+        Positioner.moveMotors(Controller.adjustPositions(operationMode, Sensors.getLuminosity(), lastMovementKey));
         Serial.println("Move motor");
-        if (operationMode == AUTOMATIC){
-          retval = INPUT_SENSORS;
-        }
         break;
     case A05:
         //Keyboard.debug((char*)"Leitura de luminosidade dos sensores.",1);
-        Display.getInfo(Sensors.getLuminosity());
+        //Display.getInfo(Sensors.getLuminosity());
         Serial.println("leitura sensores");
         retval = MOVE_MOTORS;
         break;
@@ -106,10 +107,13 @@ int executeAction(int actionCode)
         // funcao deve ser chamada aqui e tratar qual deve ser o novo modo de operacao
         //Keyboard.debug((char*)"Modo de operacao alterado.",1);
         operationMode = 1 - operationMode; // switch
-        if (operationMode == AUTOMATIC){
-          retval = INPUT_SENSORS;
-          switchAuto = false;
+        if (operationMode == AUTOMATIC) {
+          Display.activate(true);
+          if( xSemaphoreGive(SemaphoreHandle) != pdPASS )
+            Serial.println("Erro ao enviar para semáforo");
         }
+        else
+          Display.activate(false);
         break;
     case A07:
         //Keyboard.debug((char*)"Placa agora esta travada na posicao definida.",1);
@@ -224,7 +228,7 @@ void taskObtainEvent(void *pvParameters)
     BaseType_t xStatus;
 
     for (;;){
-        eventCode = NO_EVENTS;
+        eventCode = internEvent;
 
         keys = Keyboard.getKeys();
         inputCode = keys[0];
@@ -240,80 +244,76 @@ void taskObtainEvent(void *pvParameters)
         salvar posicao atual:          'p'      keyboard
         */
 
-        if (inputCode == 's'){
-          switchAuto = true;
+        if (eventCode == NO_EVENTS){
+          switch (inputCode) {
+              case 'm':
+                  eventCode = SELECT_MANUAL;
+                  xStatus = xQueueSendToBack( QueueHandle, &eventCode, 0 );
+                  //if( xStatus != pdPASS )
+                      //Keyboard.debug((char*)"Erro ao enviar evento para fila", 1);
+                  if ( xStatus == pdPASS)
+                    Serial.println("manual");
+                  break;
+              case 'a':
+                  eventCode = SELECT_AUTOMATIC;
+                  xStatus = xQueueSendToBack( QueueHandle, &eventCode, 0 );
+                  //if( xStatus != pdPASS )
+                      //Keyboard.debug((char*)"Erro ao enviar evento para fila", 1);
+                  if ( xStatus == pdPASS)
+                    Serial.println("automatico");
+                  break;
+              case 'i': // pensar ainda em como fazer a logica de movimentacao para cada lado, talvez usar keys[1]
+                  eventCode = INPUT_KEYS;
+                  lastMovementKey = keys[1];
+                  xStatus = xQueueSendToBack( QueueHandle, &eventCode, 0 );
+                  //if( xStatus != pdPASS )
+                      //Keyboard.debug((char*)"Erro ao enviar evento para fila", 1);
+                  if ( xStatus == pdPASS)
+                    Serial.println("input");
+                  break;
+              case 'r': // dentro da propia funcao para movimentacao que deve ser checado o modo de operacao
+                  eventCode = MOVE_MOTORS;
+                  xStatus = xQueueSendToBack( QueueHandle, &eventCode, 0 );
+                  //if( xStatus != pdPASS )
+                      //Keyboard.debug((char*)"Erro ao enviar evento para fila", 1);
+                  if ( xStatus == pdPASS)
+                    Serial.println("motores");
+                  break;
+              case 'l':
+                  eventCode = INPUT_SENSORS;
+                  xStatus = xQueueSendToBack( QueueHandle, &eventCode, 0 );
+                  //if( xStatus != pdPASS )
+                      //Keyboard.debug((char*)"Erro ao enviar evento para fila", 1);
+                  if ( xStatus == pdPASS)
+                    Serial.println("sensores");
+                  break;
+              case 's': // switch alterado -> tratamento deve ser feito dentro de keyboard.cpp msm
+                  eventCode = SWITCH_MODE;
+                  // if (operationMode == AUTOMATIC){
+                  //   switchAuto = true;
+                  // }
+                  xStatus = xQueueSendToBack( QueueHandle, &eventCode, 0 );
+                  //if( xStatus != pdPASS )
+                      //Keyboard.debug((char*)"Erro ao enviar evento para fila", 1);
+                  if ( xStatus == pdPASS)
+                    Serial.println("switch");
+                  break;
+              case 'p':
+                  eventCode = SAVE_POSITION;
+                  xStatus = xQueueSendToBack( QueueHandle, &eventCode, 0 );
+                  //if( xStatus != pdPASS )
+                      //Keyboard.debug((char*)"Erro ao enviar evento para fila", 1);
+                  if ( xStatus == pdPASS)
+                    Serial.println("salva pos");
+                  break;
+              default:
+                  break;
+          }
         }
-
-        if (internEvent != NO_EVENTS){
-          inputCode = (internEvent == INPUT_SENSORS) ? 'l' : 'r';
-        }
-        if (switchAuto && inputCode == 'l'){
-          inputCode = 's';
-        }
-
-        switch (inputCode) {
-            case 'm':
-                eventCode = SELECT_MANUAL;
-                xStatus = xQueueSendToBack( QueueHandle, &eventCode, 0 );
-                //if( xStatus != pdPASS )
-                    //Keyboard.debug((char*)"Erro ao enviar evento para fila", 1);
-                if ( xStatus == pdPASS)
-                  Serial.println("manual");
-                break;
-            case 'a':
-                eventCode = SELECT_AUTOMATIC;
-                xStatus = xQueueSendToBack( QueueHandle, &eventCode, 0 );
-                //if( xStatus != pdPASS )
-                    //Keyboard.debug((char*)"Erro ao enviar evento para fila", 1);
-                if ( xStatus == pdPASS)
-                  Serial.println("automatico");
-                break;
-            case 'i': // pensar ainda em como fazer a logica de movimentacao para cada lado, talvez usar keys[1]
-                eventCode = INPUT_KEYS;
-                lastMovementKey = keys[1]; 
-                xStatus = xQueueSendToBack( QueueHandle, &eventCode, 0 );
-                //if( xStatus != pdPASS )
-                    //Keyboard.debug((char*)"Erro ao enviar evento para fila", 1);
-                if ( xStatus == pdPASS)
-                  Serial.println("input");
-                break;
-            case 'r': // dentro da propia funcao para movimentacao que deve ser checado o modo de operacao
-                eventCode = MOVE_MOTORS;
-                xStatus = xQueueSendToBack( QueueHandle, &eventCode, 0 );
-                //if( xStatus != pdPASS )
-                    //Keyboard.debug((char*)"Erro ao enviar evento para fila", 1);
-                if ( xStatus == pdPASS)
-                  Serial.println("motores");
-                break;
-            case 'l':
-                eventCode = INPUT_SENSORS;
-                xStatus = xQueueSendToBack( QueueHandle, &eventCode, 0 );
-                //if( xStatus != pdPASS )
-                    //Keyboard.debug((char*)"Erro ao enviar evento para fila", 1);
-                if ( xStatus == pdPASS)
-                  Serial.println("sensores");
-                break;
-            case 's': // switch alterado -> tratamento deve ser feito dentro de keyboard.cpp msm
-                eventCode = SWITCH_MODE;
-                // if (operationMode == AUTOMATIC){
-                //   switchAuto = true;
-                // }
-                xStatus = xQueueSendToBack( QueueHandle, &eventCode, 0 );
-                //if( xStatus != pdPASS )
-                    //Keyboard.debug((char*)"Erro ao enviar evento para fila", 1);
-                if ( xStatus == pdPASS)
-                  Serial.println("switch");
-                break;
-            case 'p':
-                eventCode = SAVE_POSITION;
-                xStatus = xQueueSendToBack( QueueHandle, &eventCode, 0 );
-                //if( xStatus != pdPASS )
-                    //Keyboard.debug((char*)"Erro ao enviar evento para fila", 1);
-                if ( xStatus == pdPASS)
-                  Serial.println("salva pos");
-                break;
-            default:
-                break;
+        else{
+            xStatus = xQueueSendToBack( QueueHandle, &eventCode, 0 );
+            //if( xStatus != pdPASS )
+                //Keyboard.debug((char*)"Erro ao enviar evento para fila", 1);
         }
       vTaskDelay(1);
     }
@@ -357,6 +357,23 @@ void taskStateMachine(void *pvParameters) {
     }
 } // taskStateMachine
 
+void taskReadSensors(void *pvParameters) {
+  TickType_t xLastWakeTime;
+  const TickType_t xDelay500ms = pdMS_TO_TICKS( SENSORS_DELAY );
+
+  for( ;; ) {
+    xSemaphoreTake( SemaphoreHandle, portMAX_DELAY );
+    xLastWakeTime = xTaskGetTickCount();
+
+    while(Display.isActive()) {
+      Display.getInfo(Sensors.getLuminosity());
+      internEvent = INPUT_SENSORS;
+      Serial.println("periodico");
+      vTaskDelayUntil( &xLastWakeTime, xDelay500ms );
+    }
+  }
+}
+
 // The setup function runs once when you press reset or power on the board.
 void setup() {
   // Initialize serial communication at 115200 bits per second:
@@ -382,17 +399,17 @@ void setup() {
   Serial.println("IP address: ");
   Serial.println(WiFi.localIP());
 
-  
+
   Keyboard.init();
   initSystem();
   //Serial.println("Sistema iniciado");
 
   // Create the queue which will have <QueueElementSize> number of elements, each of size `message_t` and pass the address to <QueueHandle>.
   QueueHandle = xQueueCreate(QueueElementSize, sizeof(int));
-
+  SemaphoreHandle = xSemaphoreCreateBinary();
   // Check if the queue was successfully created
-  if (QueueHandle == NULL) {
-    Serial.println("Queue could not be created. Halt.");
+  if (QueueHandle == NULL || SemaphoreHandle == NULL) {
+    Serial.println("Queue or Semaphore could not be created. Halt.");
     while (1) {
       delay(1000);  // Halt at this point as is not possible to continue
     }
@@ -413,6 +430,16 @@ void setup() {
 
   xTaskCreate(
     taskObtainEvent, "Task Obtain event", 2048  // Stack size
+    ,
+    NULL  // No parameter is used
+    ,
+    1  // Priority
+    ,
+    NULL  // Task handle is not used here
+  );
+
+  xTaskCreate(
+    taskReadSensors, "Task Read sensors", 2048  // Stack size
     ,
     NULL  // No parameter is used
     ,

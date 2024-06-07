@@ -73,7 +73,7 @@ char* KeyboardClass::getKeys()
 /*
     */
     int read_count = 0;
-    
+
 
     // if (Serial.available() > 0)
     // {
@@ -85,7 +85,7 @@ char* KeyboardClass::getKeys()
     // {
     //     Serial.println(buf);
     // }
-    
+
       NetworkClient client = server.accept();  // listen for incoming clients
 
     if (client) {                     // if you get a client,
@@ -129,7 +129,7 @@ char* KeyboardClass::getKeys()
           if (currentLine.endsWith("GET /a")) {
             buf[read_count++] = 'a';  // GET /L turns the LED off
           }
-         
+
           if (currentLine.endsWith("GET /r")) {
             buf[read_count++] = 'r';  // GET /L turns the LED off
           }

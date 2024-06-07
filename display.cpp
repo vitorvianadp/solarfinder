@@ -8,7 +8,7 @@ DisplayClass Display;
 /************************************************************************
  construtor
 *************************************************************************/
-DisplayClass::DisplayClass()
+DisplayClass::DisplayClass(): active(false)
 {
 }
 
@@ -31,4 +31,12 @@ void DisplayClass::getInfo(sensorsReading sensorsReading){
         }
     #endif
     // implementar POST request para interface com os dados do sensor
+}
+
+bool DisplayClass::isActive(){
+  return active;
+}
+
+void DisplayClass::activate(bool command){
+  active = command;
 }

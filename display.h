@@ -20,7 +20,11 @@ class DisplayClass: public DisplayInterface{
       nenhuma
     *************************/
     void getInfo(sensorsReading sensorsReading);
+    bool isActive();
+    void activate(bool command);
 
+    private:
+    bool active;
 };
 
 extern DisplayClass Display;
