@@ -62,9 +62,9 @@ void ControllerClass::automatic(sensorsReading luminosities){
     if (-1*tol > dvert || dvert > tol) // se a diferença entre os valores for maior que a tolerância, movimentar
     {
         if (avt > avd) // se o valor medio superior for maior que o inferior, movimenta para cima
-            servoVertical += 5;
+            servoVertical-=2;
         else if (avt < avd) // se o valor medio inferior for maior que o superior, movimenta para baixo
-            servoVertical -= 5;
+            servoVertical+=2;
     }
 
 
@@ -72,9 +72,9 @@ void ControllerClass::automatic(sensorsReading luminosities){
     if (-1*tol > dhoriz || dhoriz > tol) //mesmo procedimento, mas para o horizontal
     {
         if (avl > avr)
-            servoHorizontal -= 5;
+            servoHorizontal-=2;
         else if (avl < avr)
-            servoHorizontal += 5;
+            servoHorizontal+=2;
         else // avl = avr
             delay(5000);
     }
@@ -112,13 +112,13 @@ void ControllerClass::automatic(sensorsReading luminosities){
 *************************************************************************/
 void ControllerClass::manual(char key){
     if (key == 'u')
-        servoVertical += 30;
+        servoVertical-=2;
     else if (key == 'd')
-        servoVertical -= 30;
+        servoVertical+=2;
     else if (key == 'r')
-        servoHorizontal += 30;
+        servoHorizontal+=2;
     else if (key == 'l')
-        servoHorizontal -= 30;
+        servoHorizontal-=2;
 }
 
 /************************************************************************

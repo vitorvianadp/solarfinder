@@ -32,8 +32,8 @@ const int QueueElementSize = 10;
 #define TASK1_INTERVAL 150
 #define TASK2_INTERVAL 100
 
-const char *ssid = "viana_2g";
-const char *password = "1110628000";
+const char *ssid = "Galaxyvv";
+const char *password = "uhyy9362";
 
 //NetworkServer server(80);
 
@@ -372,7 +372,7 @@ void taskReadSensors(void *pvParameters) {
 
     while(Display.isActive()) {
       Display.getInfo(Sensors.getLuminosity());
-      internEvent = INPUT_SENSORS;
+      internEvent = (state == AUTOMATIC_DATA_PROCESSING) ? MOVE_MOTORS : INPUT_SENSORS;
       Serial.println("periodico");
       vTaskDelayUntil( &xLastWakeTime, xDelay500ms );
     }

@@ -3,7 +3,7 @@ const delay = 100; //ms
 
 function makeRequest(terminal) {
     console.log("clicou")
-    var url = `http://192.168.15.12/${terminal}`;
+    var url = `http://192.168.206.151/${terminal}`;
     var xhr = new XMLHttpRequest();
     xhr.onload = function() {
         if (xhr.status >= 200 && xhr.status < 300) {
@@ -15,7 +15,7 @@ function makeRequest(terminal) {
                 xhr.open('GET', url);
                 xhr.send();
                 }
-                
+
 function startRequest(action) {
     intervalId = setInterval(() => {
         makeRequest(action);
