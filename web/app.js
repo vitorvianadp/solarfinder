@@ -3,7 +3,7 @@ const delay = 100; //ms
 
 function makeRequest(terminal) {
     console.log("clicou")
-    var url = `http://192.168.206.151/${terminal}`;
+    var url = `http://192.168.15.4/${terminal}`;
     var xhr = new XMLHttpRequest();
     xhr.onload = function() {
         if (xhr.status >= 200 && xhr.status < 300) {
@@ -53,3 +53,51 @@ document.getElementById('i').addEventListener('click', () => makeRequest('i'));
 document.getElementById('r').addEventListener('click', () => makeRequest('r'));
 document.getElementById('l').addEventListener('click', () => makeRequest('l'));
 document.getElementById('p').addEventListener('click', () => makeRequest('p'));
+
+
+function LdrRequest() {
+    //console.log("clicou LDR")
+    var url = `http://192.168.15.4/ldr`;
+    var xhr = new XMLHttpRequest();
+    xhr.onload = function() {
+        if (xhr.status >= 200 && xhr.status < 300) {
+            var ldrValue = xhr.responseText;
+            console.log(ldrValue)
+            //console.log('Valor do LDR:', ldrValue);
+            //console.log('Resposta:', xhr.responseText);
+            displayLDRValue(ldrValue);
+            } else {
+                console.error('Erro ao fazer a solicitação. Código de status:', xhr.status);
+                }
+                };
+                xhr.open('GET', url);
+                xhr.send();
+};
+
+
+function displayLDRValue(ldrValue) {
+        let padrao = /(?!:)\d+(?=:)/g;
+        let numeros = ldrValue.match(padrao);
+        var ldrValueElement = document.getElementById('ldrValue');
+        if (ldrValueElement) {
+            ldrValueElement.textContent = 'Valor do LDR: ' + numeros;
+        } else {
+            console.error('Elemento HTML não encontrado para exibir o valor do LDR');
+        }
+    }
+
+var intervalIdLDR;
+
+function toggleSendingRequests() {
+    console.log('clique')
+    let button = document.getElementById('botao');
+    console.log(button)
+    if (intervalIdLDR) {
+        clearInterval(intervalIdLDR);
+        intervalIdLDR = null;
+        button.textContent = 'Iniciar Função';
+    } else {
+        intervalIdLDR = setInterval(LdrRequest, 1000); // 10000 milissegundos = 10 segundos
+        button.textContent = 'Parar Envio de Requisições';
+    }
+}

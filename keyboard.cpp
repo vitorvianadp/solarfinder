@@ -2,6 +2,7 @@
 #include <Wifi.h>
 #include "config.h"
 #include "keyboard.h"
+#include "sensors.h"
 
 KeyboardClass Keyboard;
 NetworkServer server(80);
@@ -70,7 +71,7 @@ char* KeyboardClass::getKeys()
     salvar posicao atual:          'p'
     */
 
-/*
+  /*
     */
     int read_count = 0;
 
@@ -103,6 +104,7 @@ char* KeyboardClass::getKeys()
               // HTTP headers always start with a response code (e.g. HTTP/1.1 200 OK)
               // and a content-type so the client knows what's coming, then a blank line:
               client.println("HTTP/1.1 200 OK");
+              client.println("Access-Control-Allow-Origin:*");
               client.println("Content-type:text/html");
               client.println();
 
@@ -158,6 +160,38 @@ char* KeyboardClass::getKeys()
             buf[read_count++] = 'i';
             buf[read_count++] = 'r'; // GET /L turns the LED off
           }
+            if (currentLine.endsWith("GET /ldr")) {
+              // Read LDR data here
+                  int LDRRT = analogRead(LDRRT_PIN);
+                  int LDRLT = analogRead(LDRLT_PIN); // superior esquerdo
+                  int LDRLD = analogRead(LDRLD_PIN);
+                  int LDRRD = analogRead(LDRRD_PIN);// Assuming LDR is connected to analog pin A0
+              // Convert ldrData to string
+              String LDRRT_string = String(LDRRT);
+              String LDRLT_string = String(LDRLT);
+              String LDRLD_string = String(LDRLD);
+              String LDRRD_string = String(LDRRD);
+              // Send LDR data as response
+              client.println("HTTP/1.1 200 OK");
+              client.println("Access-Control-Allow-Origin:*");
+              client.println("Content-type:text/html");
+              
+              client.println();
+
+              client.print(":"); 
+              client.print(LDRLT_string);
+              client.print(":");
+              client.print(LDRRT_string);
+              client.print(":");
+              client.print(LDRLD_string);
+              client.print(":");
+              client.print(LDRRD_string);
+              client.print(":");
+
+              // The HTTP response ends with another blank line:
+              client.println();
+              // break out of the while loop:
+            }          
         }
       }
       // close the connection:

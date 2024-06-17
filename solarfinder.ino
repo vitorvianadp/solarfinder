@@ -32,8 +32,8 @@ const int QueueElementSize = 10;
 #define TASK1_INTERVAL 150
 #define TASK2_INTERVAL 100
 
-const char *ssid = "Galaxyvv";
-const char *password = "uhyy9362";
+const char *ssid = "ARJWORK";
+const char *password = "CFU6423H9X67JMI";
 
 //NetworkServer server(80);
 
