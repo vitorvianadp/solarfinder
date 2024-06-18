@@ -1,17 +1,104 @@
-.container {
-    background-color: #ffffff;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-family: "Arial", sans-serif;
-    height: 100vh;
-    margin: 0;
-    flex-direction: column;
-    width: 100vw;
-}
 
 @import url(https://fonts.googleapis.com/css?family=Lato:300);
+* {
+  font-family: 'Lato';
+  font-weight: bolder;
+}
+h1 {
+  font-family: 'Lato';
+  font-weight: bolder;
+  color: white;
+  margin-right: 20px;
+}
 
+header {
+  display: flex;
+}
+
+.modes-container {
+  display: flex;
+  justify-content:center;
+  color: white;
+  font: 16px;
+  
+}
+
+ .slider-div {
+  margin: 10px;
+  background-color: #F29F05;
+  border-radius: 10px;
+  padding: 10px;
+  cursor: pointer;
+  transition: transform 0.3s ease;
+ }
+
+ .slider-div:hover {
+  transform: scale(1.1);
+ }
+
+ 
+
+.btn-container {
+  display: flex;
+  justify-content: center;
+}
+
+#botao{
+  border: none;
+  color: white;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  background-color: #F29F05;
+  border-radius: 10px;
+  margin:20px;
+  padding: 20px;
+  cursor: pointer;
+  transition: transform 0.3s ease;
+
+}
+
+#botao:hover {
+  transform: scale(1.1);
+}
+
+body, .container {
+  background-color: 	rgb(30,30,30);
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.colorbox {
+  margin: 20px auto;
+  
+  display: flex;
+  
+  display:grid;
+  grid-template-columns: 100px 100px 100px; 
+  grid-row: auto auto;
+  grid-column-gap: 20px;
+  grid-row-gap: 20px;
+}
+
+.colorbox  div {
+  background-color:#333;
+  height: 100px;
+  
+  border-radius:10px;
+  color:#fff;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:20px;
+  font-family:sans-serif;
+  transition: transform 0.3s ease;
+}
+
+.colorbox  div:hover {
+  transform: scale(1.1);
+}
 
 
 .keys {
@@ -23,12 +110,13 @@
 }
 
 .arr {
+  transition: transform 0.3s ease;
   cursor: pointer;
   width: 100px;
   height: 100px;
   text-align: center;
   line-height: 100px;
-  background: grey;
+  background: #F29F05;
   color: white;
   font-size: 50px; 
   display: inline-block;
@@ -42,36 +130,7 @@
   user-select: none;
 }
 
-.arr:hover {
-  background: darken(grey, 10);
-}
 
 
 
-
-.slider-div {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    background-color: grey;
-    padding: 0.75rem;
-    border-radius: 1rem;
-
-}
-
-.slider-div > p {
-  font-weight: bolder;
-  color: white;
-}
-
-
-
-.grid-container {
-  display: grid;
-  grid-template-columns: 250px 250px 250px;
-  grid-gap: 20px;
-  background-color: #fff;
-  color: #444;
-  
-}
 

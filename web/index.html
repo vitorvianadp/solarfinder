@@ -6,41 +6,64 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="stylesheet" href="style.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-    <title>Solar Tracker System</title>
+    <title>SolarFinder </title>
 </head>
 
 <body>
     <div class="container">
+        <header>
+            
+            <h1>☀️ SolarFinder </h1>
+           
+    
+            
+            <div class="modes-container">
+    
+                <div class="slider-div" id="s">
+                    <p class="button">Trocar modo (s)</p>
+                </div>
+                <div class="slider-div" id="m">
+                    <p class="button">Manual (m)</p>
+                </div>
+                <div class="slider-div" id="a">
+                    <p class="button">Automatico (a)</p>
+                </div>
+                <!-- 
+                            <div class="slider-div" id="i">
+                                <p class="button">Setas para movimentar (i)</p>
+                            </div>
+                            <div class="slider-div" id="r">
+                                <p class="button"> movimentar motor (r)</p>
+                            </div>
+                            <div class="slider-div" id="l">
+                                <p class="button"> leitura LDR (l)</p>
+                            </div>
+                            <div class="slider-div" id="p">
+                                <p class="button"> Salvar posição atual (p)</p>
+                            </div>
+                -->
+    
+    
+            </div>
+        </header>
 
-        <h1>Solar Tracker System</h1>
-
-        
-        <div class="grid-container">
-
-            <div class="slider-div" id="s">
-                <p class="button">Trocar modo (s)</p>
-            </div>
-            <div class="slider-div" id="m">
-                <p class="button">Manual (m)</p>
-            </div>
-            <div class="slider-div" id="a">
-                <p class="button">Automatico (a)</p>
-            </div>
-            <div class="slider-div" id="i">
-                <p class="button">Setas para movimentar (i)</p>
-            </div>
-            <div class="slider-div" id="r">
-                <p class="button"> movimentar motor (r)</p>
-            </div>
-            <div class="slider-div" id="l">
-                <p class="button"> leitura LDR (l)</p>
-            </div>
-            <div class="slider-div" id="p">
-                <p class="button"> Salvar posição atual (p)</p>
-            </div>
-
+        <div class="colorbox">
+            <div class="none"></div>
+            <div id="tr">1</div>
+            <div class="none"></div>
+            <div id="tl">2</div>
+            <div class="none"></div>
+            <div id="bl">3</div>
+            <div class="none"></div>
+            <div id="br">4</div>
+            <div class="none"></div>
 
         </div>
+        <div class="btn-container">
+            <button id="botao" onclick="toggleSendingRequests()">Ler Sensores</button>
+        </div>
+        <div>
+            
         <div class="keys">
             <div class="up arr" id="up"><i class="fa fa-arrow-up"></i></div>
             <br />
@@ -48,9 +71,11 @@
             <div class="down arr" id="down"><i class="fa fa-arrow-down"></i></div>
             <div class="right arr" id="right"><i class="fa fa-arrow-right"></i></div>
         </div>
+        
+    </div>
         <script src="app.js"></script>
-        <div id="ldrValue">Valor do LDR: </div>
-        <button id="botao" onclick="toggleSendingRequests()">Iniciar Função</button>
+        
+        
     </div>
 
     </div>

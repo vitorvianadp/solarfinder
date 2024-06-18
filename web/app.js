@@ -75,12 +75,39 @@ function LdrRequest() {
 };
 
 
+
+function updateGradient(divname) {
+    
+    var value = document.getElementById(divname).textContent;
+    console.log(value)
+    var gradientColor = interpolateColor(value, [255, 255, 0], [255, 0, 0]);
+    document.getElementById(divname).style.background = gradientColor;
+}
+
+function interpolateColor(factor, color1, color2) {
+    var result = color1.slice();
+    for (var i = 0; i < 3; i++) {
+        result[i] = Math.round(result[i] + factor * (color2[i] - color1[i]));
+    }
+    return "rgb(" + result.join(",") + ")";
+}
+
 function displayLDRValue(ldrValue) {
         let padrao = /(?!:)\d+(?=:)/g;
         let numeros = ldrValue.match(padrao);
-        var ldrValueElement = document.getElementById('ldrValue');
-        if (ldrValueElement) {
-            ldrValueElement.textContent = 'Valor do LDR: ' + numeros;
+        var tl = document.getElementById('tl');
+        var tr = document.getElementById('tr');
+        var bl = document.getElementById('bl');
+        var br = document.getElementById('br');
+        if (tl) {
+            tl.textContent = ((numeros[0])/4096).toFixed(2)
+            tr.textContent = ((numeros[1])/4096).toFixed(2)
+            bl.textContent = ((numeros[2])/4096).toFixed(2)
+            br.textContent = ((numeros[3])/4096).toFixed(2)
+            updateGradient('tl')
+            updateGradient('tr')
+            updateGradient('bl')
+            updateGradient('br')
         } else {
             console.error('Elemento HTML não encontrado para exibir o valor do LDR');
         }
